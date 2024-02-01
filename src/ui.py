@@ -1,3 +1,4 @@
+# flake8:noqa
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QTabWidget, QGridLayout, QCalendarWidget, QGroupBox,
     QVBoxLayout, QTableWidget, QTableWidgetItem, QHeaderView, QLabel
@@ -19,10 +20,6 @@ import json
 
 
 db = DataBase()
-STUDENTS_INFO = db._getTableInfo("students")
-BOOKS_INFO = db._getTableInfo("books")
-LOAN_INFO = db._getTableInfo("loan")
-db._closeConnectionAndCursor()
 
 with open("theme_configs/theme.json", "r") as file:
     THEME = json.load(file)
@@ -115,7 +112,7 @@ class StudentLayout(QVBoxLayout):
                 "TURNO",
                 "SÉRIE"
         ]
-        self.studentTable = createTable(tableIndex, STUDENTS_INFO)
+        self.studentTable = createTable(tableIndex, db._getTableInfo("students"))
 
         self.addWidget(
             self.studentTable, alignment=Qt.AlignmentFlag.AlignHCenter
@@ -144,7 +141,7 @@ class BookLayout(QVBoxLayout):
             "GÊNERO",
             "QUANTIDADE"
         ]
-        self.bookTable = createTable(tableIndex, BOOKS_INFO)
+        self.bookTable = createTable(tableIndex, db._getTableInfo("books"))
 
         self.addWidget(
             self.bookTable, alignment=Qt.AlignmentFlag.AlignHCenter
@@ -175,7 +172,7 @@ class loanAndDevolutionLayout(QVBoxLayout):
                 "DATA EMPRÉSTIMO",
                 "DATA DEVOLUÇÃO"
             ]
-        self.loanTable = createTable(tableIndex, LOAN_INFO)
+        self.loanTable = createTable(tableIndex, db._getTableInfo("loan"))
 
         self.addWidget(
             self.loanTable, alignment=Qt.AlignmentFlag.AlignHCenter
