@@ -1,13 +1,9 @@
 from PySide6.QtWidgets import (
-    QFormLayout, QDialogButtonBox, QLineEdit, QSpinBox, QDialog, QMessageBox
+    QFormLayout, QDialogButtonBox, QLineEdit, QSpinBox, QDialog, QMessageBox,
 )
-from .student_and_book import (
-    Student, Book
-)
+
 from .database import DataBase
 
-STUDENT = Student()
-BOOK = Book()
 DATABASE = DataBase()
 
 
@@ -23,7 +19,7 @@ class BaseWindow(QDialog):
         for field_name, field_widget in fields:
             field_widget = field_widget()
             self.fields[field_name] = field_widget
-            if "ID" in field_name or "Quantidade" in field_name:
+            if "Quantidade" in field_name:
                 field_widget.setRange(0, 9999999)
             _layout.addRow(field_name + ":", field_widget)
 
@@ -57,13 +53,7 @@ class BaseWindow(QDialog):
             attributes.append(field.text())
             field.clear()
 
-        STUDENT.setName = attributes[0]
-        STUDENT.setAge = int(attributes[1])
-        STUDENT.setAdress = attributes[2]
-        STUDENT.setContactNumber = attributes[3]
-        STUDENT.setShift = attributes[4]
-        STUDENT.setGradeYear = attributes[5]
-        DATABASE.registerStudent(STUDENT)
+        DATABASE.registerStudent(attributes)
         self._makeMessageBox("Cadastro Realizado!", attributes)
 
     def _getNewBookInfos(self):
@@ -72,29 +62,17 @@ class BaseWindow(QDialog):
             attributes.append(field.text())
             field.clear()
 
-        BOOK.setTitle = attributes[0]
-        BOOK.setAuthor = attributes[1]
-        BOOK.setPublishingCompany = attributes[2]
-        BOOK.setGender = attributes[3]
-        BOOK.setAmount = int(attributes[4])
-        DATABASE.registerBook(BOOK)
+        DATABASE.registerBook(attributes)
         self._makeMessageBox("Cadastro Realizado!", attributes)
 
     def _getChangesStudent(self):
         attributes = []
-        STUDENT = Student()
         for field in self.fields.values():
             attributes.append(field.text())
             field.clear()
-        print(attributes)
+
         _id = int(attributes[0])
-        STUDENT.setName = attributes[1]
-        STUDENT.setAge = int(attributes[2])
-        STUDENT.setAdress = attributes[3]
-        STUDENT.setContactNumber = attributes[4]
-        STUDENT.setShift = attributes[5]
-        STUDENT.setGradeYear = attributes[6]
-        DATABASE.changeRegisterStudent(_id, STUDENT)
+        DATABASE.changeRegisterStudent(_id, attributes[1:])
         self._makeMessageBox("Cadastro Atualizado!", attributes[1:])
 
     def _getChangesBook(self):
@@ -104,12 +82,8 @@ class BaseWindow(QDialog):
             attributes.append(field.text())
             field.clear()
         _id = int(attributes[0])
-        BOOK.setTitle = attributes[1]
-        BOOK.setAuthor = attributes[2]
-        BOOK.setPublishingCompany = attributes[3]
-        BOOK.setGender = attributes[4]
-        BOOK.setAmount = int(attributes[5])
-        DATABASE.changeRegisterBook(_id, BOOK)
+
+        DATABASE.changeRegisterBook(_id, attributes[1:])
         self._makeMessageBox("Cadastro Atualizado!", attributes[1:])
 
     def _deleteStudentRegister(self):
@@ -195,7 +169,7 @@ class StudentRegisterWindow(BaseWindow):
     def __init__(self, changeRegister=False):
         if changeRegister:
             fields = [
-                ("ID", QSpinBox),
+                ("ID", QLineEdit),
                 ("Nome", QLineEdit),
                 ("Idade", QSpinBox),
                 ("Endereço", QLineEdit),
@@ -219,7 +193,7 @@ class BookRegisterWindow(BaseWindow):
     def __init__(self, changeRegister=False):
         if changeRegister:
             fields = [
-                ("ID", QSpinBox),
+                ("ID", QLineEdit),
                 ("Título", QLineEdit),
                 ("Autor", QLineEdit),
                 ("Editora", QLineEdit),
@@ -239,7 +213,9 @@ class BookRegisterWindow(BaseWindow):
 
 class DeleteRegisterWindow(BaseWindow):
     def __init__(self, _type: str) -> None:
-        super().__init__("Apagar Cadastro" + " - " + _type, [("ID", QSpinBox)])
+        super().__init__(
+            "Apagar Cadastro" + " - " + _type, [("ID", QLineEdit)]
+        )
 
 
 class LoanANdDevolutionWindow(BaseWindow):
