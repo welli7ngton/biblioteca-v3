@@ -93,6 +93,16 @@ class MainWindow(QMainWindow):
 
 
 class StudentLayout(QVBoxLayout):
+    tableIndex = [
+            "ID",
+            "NOME",
+            "IDADE",
+            "CONTATO",
+            "ENDEREÇO",
+            "TURNO",
+            "SÉRIE"
+        ]
+
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 
@@ -103,16 +113,7 @@ class StudentLayout(QVBoxLayout):
         register = MyButtons("Cadastro")
         changeRegister = MyButtons("Alterar Cadastro")
         deleteRegister = MyButtons("Apagar Cadastro")
-        tableIndex = [
-                "ID",
-                "NOME",
-                "IDADE",
-                "CONTATO",
-                "ENDEREÇO",
-                "TURNO",
-                "SÉRIE"
-        ]
-        self.studentTable = createTable(tableIndex, db._getTableInfo("students"))
+        self.studentTable = createTable(self.tableIndex, db._getTableInfo("students"))
 
         self.addWidget(
             self.studentTable, alignment=Qt.AlignmentFlag.AlignHCenter
@@ -124,6 +125,14 @@ class StudentLayout(QVBoxLayout):
         register.clicked.connect(self.registerWindow.show)
         changeRegister.clicked.connect(self.changeRegisterWindow.show)
         deleteRegister.clicked.connect(self.deleteRefisterWindow.show)
+
+    @property
+    def new_table(self):
+        return self.studentTable
+
+    @new_table.setter
+    def new_table(self, new_table: QTableWidget):
+        self.studentTable = new_table
 
 
 class BookLayout(QVBoxLayout):
