@@ -1,34 +1,31 @@
-from .student_and_book import Student, Book
 from datetime import date, timedelta
 import sqlite3
 
 
-DATABASE_FILE_PATH = '_library.db'
-LOAN_PERIOD = 14
-TODAY = date.today()
-DEVOLUTION_DATE = TODAY + timedelta(days=LOAN_PERIOD)
-
-
 class DataBase():
+    DATABASE_FILE_PATH = '_library.db'
+    LOAN_PERIOD = 14
+    TODAY = date.today()
+    DEVOLUTION_DATE = TODAY + timedelta(days=LOAN_PERIOD)
+
     def __init_conection(self):
-        self.connection = sqlite3.connect(DATABASE_FILE_PATH)
+        self.connection = sqlite3.connect(self.DATABASE_FILE_PATH)
         self.cursor = self.connection.cursor()
 
-    def registerStudent(self, student: Student) -> None:
+    def registerStudent(self, attributes) -> None:
         self.__init_conection()
         self.cursor.execute(
             "INSERT INTO students "
             "(name, age, contact, adress, grade_year, shift) "
             "VALUES(?, ?, ?, ?, ?, ?)",
             [
-                student._name, student._age, student._contactNumber,
-                student._adress, student._gradeYear, student._shift
+                attr for attr in attributes
             ]
         )
         self.connection.commit()
         self._closeConnectionAndCursor()
 
-    def changeRegisterStudent(self, _id: int, student: Student) -> None:
+    def changeRegisterStudent(self, _id: int, attributes) -> None:
         self.__init_conection()
         self.cursor.execute(
             f"UPDATE students SET "
@@ -36,28 +33,26 @@ class DataBase():
             "adress = ?, grade_year = ?, shift = ? "
             f"WHERE student_id = {_id}",
             [
-                student._name, student._age, student._contactNumber,
-                student._adress, student._gradeYear, student._shift
+                attr for attr in attributes
             ]
         )
         self.connection.commit()
         self._closeConnectionAndCursor
 
-    def registerBook(self, book: Book) -> None:
+    def registerBook(self, attributes) -> None:
         self.__init_conection()
         self.cursor.execute(
             "INSERT INTO books "
             "(title, author, publishing_company, gender, amount) "
             "VALUES(?, ?, ?, ?, ?)",
             [
-                book._title, book._author, book._publishingCompany,
-                book._gender, book._amount
+                attr for attr in attributes
             ]
         )
         self.connection.commit()
         self._closeConnectionAndCursor()
 
-    def changeRegisterBook(self, _id: int, book: Book) -> None:
+    def changeRegisterBook(self, _id: int, attributes) -> None:
         self.__init_conection()
         self.cursor.execute(
             f"UPDATE books SET "
@@ -65,8 +60,7 @@ class DataBase():
             "gender = ?, amount = ? "
             f"WHERE book_id = {_id}",
             [
-                book._title, book._author, book._publishingCompany,
-                book._gender, book._amount
+                attr for attr in attributes
             ]
         )
         self.connection.commit()
@@ -84,8 +78,8 @@ class DataBase():
                 "(student_id, book_id, loan_date, devolution_date) "
                 "VALUES(?, ?, ?, ?)",
                 [
-                    student_id, book_id, TODAY,
-                    (TODAY + timedelta(days=devolution_date))
+                    student_id, book_id, self.TODAY,
+                    (self.TODAY + timedelta(days=devolution_date))
                 ]
             )
             self.connection.commit()
@@ -97,7 +91,7 @@ class DataBase():
             "(student_id, book_id, loan_date, devolution_date) "
             "VALUES(?, ?, ?, ?)",
             [
-                student_id, book_id, TODAY, DEVOLUTION_DATE
+                student_id, book_id, self.TODAY, self.DEVOLUTION_DATE
             ]
         )
         self.connection.commit()
