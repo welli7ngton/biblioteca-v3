@@ -4,7 +4,7 @@ from PySide6.QtWidgets import (
 
 from .database import DataBase
 
-DATABASE = DataBase()
+DATABASE = DataBase('development')
 
 
 class BaseWindow(QDialog):
@@ -129,9 +129,10 @@ class BaseWindow(QDialog):
         for field in self.fields.values():
             attributes.append(field.text())
             field.clear()
+        print(attributes)
         studentID = int(attributes[0])
-        bookID = int(attributes[0])
-        devolutionDate = int(attributes[0])
+        bookID = int(attributes[1])
+        devolutionDate = int(attributes[2])
         DATABASE.registerLoan(studentID, bookID, devolutionDate)
         self._makeMessageBox("Cadastro Realizado!", attributes)
 
@@ -222,12 +223,12 @@ class LoanANdDevolutionWindow(BaseWindow):
     def __init__(self, makeLoan=False):
         if not makeLoan:
             fields = [
-                ("ID Empréstimo", QSpinBox),
+                ("ID Empréstimo", QLineEdit),
             ]
             return super().__init__("Realizar Devolução", fields)
         fields = [
-                ("ID Aluno", QSpinBox),
-                ("ID Livro", QSpinBox),
-                ("Periodo do empréstimo", QSpinBox),
+                ("ID Aluno", QLineEdit),
+                ("ID Livro", QLineEdit),
+                ("Periodo do empréstimo", QLineEdit),
             ]
         super().__init__("Realizar Empréstimo", fields)
