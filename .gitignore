@@ -1,4 +1,6 @@
-_library.db
+.vscode
+library.db
+library_test.db
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
