@@ -1,12 +1,18 @@
 from datetime import date, timedelta
+import os
 import sqlite3
 
 
 class DataBase():
-    DATABASE_FILE_PATH = '_library.db'
     LOAN_PERIOD = 14
     TODAY = date.today()
     DEVOLUTION_DATE = TODAY + timedelta(days=LOAN_PERIOD)
+
+    def __init__(self, env) -> None:
+        if env == 'development':
+            self.DATABASE_FILE_PATH = os.getenv('DATABASE_PATH')
+        else:
+            self.DATABASE_FILE_PATH = os.getenv('DATABASE_PATH_TEST')
 
     def __init_conection(self):
         self.connection = sqlite3.connect(self.DATABASE_FILE_PATH)
@@ -16,7 +22,7 @@ class DataBase():
         self.__init_conection()
         self.cursor.execute(
             "INSERT INTO students "
-            "(name, age, contact, adress, grade_year, shift) "
+            "(name, age, contact, address_, grade_year, shift) "
             "VALUES(?, ?, ?, ?, ?, ?)",
             [
                 attr for attr in attributes
@@ -30,7 +36,7 @@ class DataBase():
         self.cursor.execute(
             f"UPDATE students SET "
             "name = ?, age = ?, contact = ?, "
-            "adress = ?, grade_year = ?, shift = ? "
+            "address_ = ?, grade_year = ?, shift = ? "
             f"WHERE student_id = {_id}",
             [
                 attr for attr in attributes
@@ -68,17 +74,17 @@ class DataBase():
 
     def registerLoan(
         self, student_id: int,
-        book_id: int, devolution_date=None
+        book_id: int, devolution_date: int = 0
     ) -> None:
         self.__init_conection()
 
-        if devolution_date:
+        if devolution_date != 0:
             self.cursor.execute(
                 "INSERT INTO loan "
-                "(student_id, book_id, loan_date, devolution_date) "
-                "VALUES(?, ?, ?, ?)",
+                "(student_id, book_id, devolution_date) "
+                "VALUES(?, ?, ?)",
                 [
-                    student_id, book_id, self.TODAY,
+                    student_id, book_id,
                     (self.TODAY + timedelta(days=devolution_date))
                 ]
             )
@@ -88,10 +94,10 @@ class DataBase():
 
         self.cursor.execute(
             "INSERT INTO loan "
-            "(student_id, book_id, loan_date, devolution_date) "
-            "VALUES(?, ?, ?, ?)",
+            "(student_id, book_id, devolution_date) "
+            "VALUES(?, ?, ?)",
             [
-                student_id, book_id, self.TODAY, self.DEVOLUTION_DATE
+                student_id, book_id, self.DEVOLUTION_DATE
             ]
         )
         self.connection.commit()
