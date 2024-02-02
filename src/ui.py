@@ -19,7 +19,7 @@ import qdarktheme
 import json
 
 
-db = DataBase()
+db = DataBase('development')
 
 with open("theme_configs/theme.json", "r") as file:
     THEME = json.load(file)
