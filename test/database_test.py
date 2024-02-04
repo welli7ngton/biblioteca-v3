@@ -9,23 +9,16 @@ class DataBaseTest():
         conn = sqlite3.connect(self.CONNECTION)
         cursor = conn.cursor()
 
-        with open('scripts/sql/create_table_students_script.sql', 'r') as file1:
-            script1 = file1.read()
+        for db in ['students', 'books', 'loan']:
+            with open(f'scripts/sql/create_table_{db}_script.sql', 'r') as file:
+                cursor.executescript(file.read())
 
-        with open('scripts/sql/create_table_books_script.sql', 'r') as file2:
-            script2 = file2.read()
-
-        with open('scripts/sql/create_table_loan_script.sql', 'r') as file3:
-            script3 = file3.read()
-
-        cursor.executescript(script1)
-        cursor.executescript(script2)
-        cursor.executescript(script3)
         conn.commit()
         conn.close()
 
-    def _delete_db(self):
-        conn = sqlite3.connect(self.CONNECTION)
+    @classmethod
+    def _delete_db(cls):
+        conn = sqlite3.connect(cls.CONNECTION)
         cursor = conn.cursor()
 
         for db in ['students', 'books', 'loan']:
@@ -34,7 +27,3 @@ class DataBaseTest():
             )
         conn.commit()
         conn.close()
-
-if __name__ == '__main__':
-    db = DataBaseTest()
-    db._delete_db()
